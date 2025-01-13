@@ -21,7 +21,7 @@ def main():
     data = rellenar_load_con_demanda(weather_data, ro, 'DEMANDA APROX.')
     data.to_csv(merged_data_path, index=False)
     ro_data = limpiar_y_renombrar_columnas(data)
-    ro_data.to_csv('output/ro_data.csv', index=False)
+    #ro_data.to_csv('output/ro_data.csv', index=False)
     print(ro_data)
     print(ro_data.tail(n=40))
     df = param_ciclicos(ro_data, 'DATETIME')
