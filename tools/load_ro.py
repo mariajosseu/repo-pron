@@ -1,13 +1,14 @@
 from datetime import datetime, timedelta
 import pandas as pd
 import os
-def get_latest_momento(merged_data_path):
-    if os.path.exists(merged_data_path):
-        merged_data_df = pd.read_csv(merged_data_path, parse_dates=['momento'])
+def get_latest_momento(parquet_file):
+    if os.path.exists(parquet_file):
+        merged_data_df = pd.read_parquet(parquet_file)
+        merged_data_df['momento'] = pd.to_datetime(merged_data_df['momento'], dayfirst=True)
         latest_momento = merged_data_df['momento'].max()
         return latest_momento
     else:
-        raise FileNotFoundError(f"{merged_data_path} not found.")
+        raise FileNotFoundError(f"{parquet_file} not found.")
 
 def read_ro_load_data(ro_folder_path, start_date, end_date, month_mapping):
     all_ro_load_data = []
@@ -148,9 +149,9 @@ def rellenar_load_con_demanda(weather_data, ro, demanda_column_name):
     combined_data = combined_data.drop(columns=[demanda_column_name])
     return combined_data
 
-def load_ro(merged_data_path, ro_folder_base_path, month_mapping, demanda_column_name):
+def load_ro(parquet_file, ro_folder_base_path, month_mapping, demanda_column_name):
     # Step 1: Get the latest 'momento' from merged_data.csv and set the date range
-    latest_momento = get_latest_momento(merged_data_path)
+    latest_momento = get_latest_momento(parquet_file)
     start_date = latest_momento - timedelta(days=5)
     end_date = datetime.now() - timedelta(days=3)  # Current date minus 3 days
 

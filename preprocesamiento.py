@@ -8,6 +8,7 @@ from datetime import datetime
 import scipy.stats as stats
 import boto3
 from io import StringIO
+from tools.clean_data import*
 
 def param_ciclicos(df, datetime_column):
     df[datetime_column] = pd.to_datetime(df[datetime_column])
@@ -81,11 +82,22 @@ def procesar_data_diaria(data):
     hoy = pd.Timestamp.today().normalize()
     # Filtrar las filas donde 'DATETIME' sea menor a hoy
     data_filtrada = data_filtrada[data_filtrada['DATETIME'] < hoy]
+    data_filtrada = data_filtrada.rename(columns={'DEMANDA APROX.': 'consumo'})
+    print(data_filtrada)
     # Interpolar los valores de 'consumo' y 'temperature'
     data_filtrada['consumo'] = data_filtrada['consumo'].interpolate(method='linear', limit_direction='forward')
     data_filtrada['temperature'] = data_filtrada['temperature'].interpolate(method='linear', limit_direction='forward')
     return data_filtrada
 
+
+def prepro(data):
+    ro_data = limpiar_y_renombrar_columnas(data)
+    df = param_ciclicos(ro_data, 'DATETIME')
+    df1 = indicador_cambio_hora(df)
+    df2 = add_holidays(df1)
+    data_pre = get_dummies(df2)
+    data = procesar_data_diaria(data_pre)
+    return data
 
 def main():
     df = param_ciclicos(df, 'DATETIME')
@@ -94,6 +106,7 @@ def main():
     data_pre = get_dummies(df2)
     data = procesar_data_diaria(data_pre)
     print(data)
+
 
 if __name__ == "__main__":
     main()

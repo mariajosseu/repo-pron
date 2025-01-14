@@ -56,7 +56,7 @@ with tab0:
         # Selección de columnas
         columnas_seleccionadas = st.multiselect(
             "Selecciona predicciones para incluir",
-            sorted([col for col in pred_df.columns if col.startswith('2024')], reverse=True),
+            sorted([col for col in pred_df.columns if col.startswith('202')], reverse=True),
             default=[]
         )
 
