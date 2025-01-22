@@ -20,7 +20,7 @@ def fetch_and_process_weather_data_for_period(start_date, end_date):
 
         # API endpoint
         url = f'https://climatologia.meteochile.gob.cl/application/servicios/getDatosRecientesEma/{codigo_nacional}/{year}/{month}'
-
+        print(url)
         # Parameters for the API request
         params = {
             'usuario': usuario,
@@ -53,15 +53,16 @@ def fetch_and_process_weather_data_for_period(start_date, end_date):
 
                 # Clean up and convert API fields to match historical DataFrame fields
                 api_weather_df['Temperatura'] = api_weather_df['temperatura'].str.replace(' °C', '').astype(float)
-                api_weather_df['PuntoRocio'] = api_weather_df['puntoDeRocio'].str.replace(' °C', '').astype(float)
-                api_weather_df['Humedad'] = api_weather_df['humedadRelativa'].str.replace(' %', '').astype(float)
-                api_weather_df['IndiceUVB'] = api_weather_df['radiacionGlobalInst'].str.replace(' Watt/m2', '').astype(float) * 0.005  # Adjust conversion factor for UV Index
-                api_weather_df['dd_Valor'] = api_weather_df['direccionDelViento'].str.replace(' °', '').astype(float)
-                api_weather_df['ff_Valor'] = api_weather_df['fuerzaDelViento'].str.replace(' kt', '').astype(float)
-                api_weather_df['RRR6_Valor'] = api_weather_df['aguaCaida6Horas'].str.replace(' mm', '').astype(float)
+                #api_weather_df['PuntoRocio'] = api_weather_df['puntoDeRocio'].str.replace(' °C', '').astype(float)
+                #api_weather_df['Humedad'] = api_weather_df['humedadRelativa'].str.replace(' %', '').astype(float)
+                #api_weather_df['IndiceUVB'] = api_weather_df['radiacionGlobalInst'].str.replace(' Watt/m2', '').astype(float) * 0.005  # Adjust conversion factor for UV Index
+                #api_weather_df['dd_Valor'] = api_weather_df['direccionDelViento'].str.replace(' °', '').astype(float)
+                #api_weather_df['ff_Valor'] = api_weather_df['fuerzaDelViento'].str.replace(' kt', '').astype(float)
+                #api_weather_df['RRR6_Valor'] = api_weather_df['aguaCaida6Horas'].str.replace(' mm', '').astype(float)
 
                 # Select relevant columns for further processing
-                relevant_columns = ['momento', 'Temperatura', 'PuntoRocio', 'Humedad', 'IndiceUVB', 'dd_Valor', 'ff_Valor', 'RRR6_Valor']
+                #relevant_columns = ['momento', 'Temperatura', 'PuntoRocio', 'Humedad', 'IndiceUVB', 'dd_Valor', 'ff_Valor', 'RRR6_Valor']
+                relevant_columns = ['momento', 'Temperatura']
                 api_weather_df = api_weather_df[relevant_columns]
 
                 # Set 'momento' as the index
@@ -97,8 +98,8 @@ def append_new_api_data(merged_df, api_weather_df):
     merged_df = pd.merge(merged_df, api_weather_df, on='momento', how='outer', suffixes=('', '_new'))
 
     # Now, for each weather-related column, update missing values in the original with the new data
-    weather_columns = ['Temperatura', 'PuntoRocio', 'Humedad', 'IndiceUVB', 'dd_Valor', 'ff_Valor', 'RRR6_Valor']
-    
+    #weather_columns = ['Temperatura', 'PuntoRocio', 'Humedad', 'IndiceUVB', 'dd_Valor', 'ff_Valor', 'RRR6_Valor']
+    weather_columns = ['Temperatura']
     for col in weather_columns:
         if f"{col}_new" in merged_df.columns:
             # Use combine_first to fill NaN values from new data
