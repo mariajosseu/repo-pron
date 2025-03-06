@@ -1,5 +1,5 @@
 from tools.load_ro import load_ro, rellenar_load_con_demanda
-from tools.weather_params import fetch_and_process_weather_data_for_period, append_new_api_data
+from tools.weather_params import fetch_and_process_weather_data_for_period, append_new_api_data, fetch
 from tools.clean_data import limpiar_y_renombrar_columnas
 import pandas as pd
 from datetime import datetime, timedelta
@@ -9,7 +9,14 @@ def main():
     merged_data_path = r'output\merged_data.csv'
     #merged_data_path_sing = r'output\merged_data_sing.csv'
     last_weather_df = pd.read_csv(merged_data_path, parse_dates=['momento'], dayfirst=False)
-    api_weather_data = fetch_and_process_weather_data_for_period((datetime.now()-timedelta(days=1)),(datetime.now()+timedelta(days=1)))
+    #api_weather_data = fetch_and_process_weather_data_for_period((datetime.now()-timedelta(days=1)),(datetime.now()+timedelta(days=1)))
+    today = datetime.now()
+    yesterday =today -timedelta(days=1)
+    tomorrow = today +timedelta(days=1)
+    usuario = 'maria.uribe@sansano.usm.cl'
+    token = '98c5510279d47e3e571b5750'
+    codigo_nacional = '330020'
+    api_weather_data = fetch(usuario=usuario, token=token, codigo_nacional=codigo_nacional, start_date=yesterday, end_date=tomorrow)
     weather_data = append_new_api_data(last_weather_df, api_weather_data)
     ro_folder_base_path = r"\\nas-cen1\DPRO\99 Resdiac\Resumenes Diarios"
     month_mapping = {

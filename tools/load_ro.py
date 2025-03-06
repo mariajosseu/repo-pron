@@ -1,14 +1,16 @@
 from datetime import datetime, timedelta
 import pandas as pd
 import os
-def get_latest_momento(parquet_file):
-    if os.path.exists(parquet_file):
-        merged_data_df = pd.read_parquet(parquet_file)
+
+def get_latest_momento(file):
+    if os.path.exists(file):
+        #merged_data_df = pd.read_parquet(parquet_file)
+        merged_data_df = pd.read_csv(file, parse_dates=['momento'])
         merged_data_df['momento'] = pd.to_datetime(merged_data_df['momento'], dayfirst=True)
         latest_momento = merged_data_df['momento'].max()
         return latest_momento
     else:
-        raise FileNotFoundError(f"{parquet_file} not found.")
+        raise FileNotFoundError(f"{file} not found.")
 
 def read_ro_load_data(ro_folder_path, start_date, end_date, month_mapping):
     all_ro_load_data = []
